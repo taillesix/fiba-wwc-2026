@@ -716,7 +716,7 @@ const TYPE_GRADIENT = {
 
 function renderPosts(filter) {
   const grid     = document.getElementById('posts-grid');
-  const filtered = filter === 'all' ? POSTS : POSTS.filter(p => p.type === filter);
+  const filtered = (filter === 'all' ? POSTS : POSTS.filter(p => p.type === filter)).slice().reverse();
   document.getElementById('visible-count').textContent = filtered.length;
 
   grid.innerHTML = filtered.map(p => `
