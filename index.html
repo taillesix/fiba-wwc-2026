@@ -683,6 +683,26 @@ const POSTS = [
 
 const fmt     = n => n >= 1000 ? (n/1000).toFixed(1).replace('.0','')+'K' : String(n);
 
+const IS_DESKTOP = window.matchMedia('(min-width: 721px)').matches;
+
+function getEmbedUrl(url) {
+  const m = url.match(/instagram\.com\/(?:[^\/]+\/)?(p|reel)\/([^\/]+)\//);
+  return m ? `https://www.instagram.com/${m[1]}/${m[2]}/embed/` : null;
+}
+
+function observeIframeLazy() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const iframe = e.target;
+        if (iframe.dataset.src && !iframe.src) iframe.src = iframe.dataset.src;
+        obs.unobserve(iframe);
+      }
+    });
+  }, { rootMargin: '300px' });
+  document.querySelectorAll('.ig-embed-frame[data-src]').forEach(f => obs.observe(f));
+}
+
 
 const fmtV    = n => n >= 1000000 ? (n/1000000).toFixed(1).replace('.0','')+'M' : n >= 1000 ? (n/1000).toFixed(1).replace('.0','')+'K' : String(n);
 const fmtFull = n => n.toLocaleString('en-US');
@@ -701,6 +721,14 @@ function renderPosts(filter) {
   grid.innerHTML = filtered.map(p => `
     <div class="post-card fade-in" onclick="openModal(${p.id})">
       <div class="post-thumb">
+        ${IS_DESKTOP && getEmbedUrl(p.url) ? `
+        <div class="ig-embed-wrap">
+          <iframe class="ig-embed-frame" data-src="${getEmbedUrl(p.url)}"
+            scrolling="no" frameborder="0" allowtransparency="true"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+            onload="this.classList.add('ig-loaded')"></iframe>
+          <div class="ig-embed-loader"><div class="ig-spinner"></div></div>
+        </div>` : `
         <div class="post-thumb-placeholder" style="--card-gradient:${TYPE_GRADIENT[p.type]||TYPE_GRADIENT.Carousel}">
           <svg class="card-ig-icon" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
             <rect x="2" y="2" width="20" height="20" rx="5"/>
@@ -709,7 +737,7 @@ function renderPosts(filter) {
           </svg>
           <p class="card-views">${fmt(p.stats.views)} vues</p>
           <p class="card-caption">${p.caption}</p>
-        </div>
+        </div>`}
         <span class="post-type" style="color:${TYPE_COLOR[p.type]||'#6ED1BB'}">${p.type}</span>
         <div class="post-overlay">
           <p class="overlay-date">${p.date}</p>
@@ -729,6 +757,7 @@ function renderPosts(filter) {
   `).join('');
 
   observeFadeIns();
+  if (IS_DESKTOP) observeIframeLazy();
 }
 
 function openModal(id) {
