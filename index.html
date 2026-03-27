@@ -289,7 +289,12 @@
       opacity: 0; transition: opacity .28s ease;
       pointer-events: none;
     }
-    .post-card:hover .post-overlay { opacity: 1; pointer-events: auto; }
+    @media (hover: hover) {
+      .post-card:hover .post-overlay { opacity: 1; pointer-events: auto; }
+    }
+    @media (hover: none) {
+      .post-overlay { display: none; }
+    }
     .overlay-date {
       font-family: 'Industry', sans-serif; font-weight: 400;
       font-size: 10px; color: var(--muted);
