@@ -660,20 +660,7 @@ function getEmbedUrl(url) {
   return m ? `https://www.instagram.com/${m[1]}/${m[2]}/embed/` : null;
 }
 
-function observeIframeLazy() {
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const iframe = e.target;
-        if (iframe.dataset.src && !iframe.src) {
-          iframe.src = iframe.dataset.src;
-        }
-        obs.unobserve(iframe);
-      }
-    });
-  }, { rootMargin: '300px' });
-  document.querySelectorAll('.ig-embed-frame[data-src]').forEach(f => obs.observe(f));
-}
+
 const fmtV    = n => n >= 1000000 ? (n/1000000).toFixed(1).replace('.0','')+'M' : n >= 1000 ? (n/1000).toFixed(1).replace('.0','')+'K' : String(n);
 const fmtFull = n => n.toLocaleString('en-US');
 const TYPE_COLOR = { Reel:'#6ED1BB', Photo:'#a8d8ea', Carousel:'#c9b1ff' };
@@ -686,21 +673,13 @@ function renderPosts(filter) {
   grid.innerHTML = filtered.map(p => `
     <div class="post-card fade-in" onclick="openModal(${p.id})">
       <div class="post-thumb">
-        ${(()=>{ const eu=getEmbedUrl(p.url); return eu
-          ? `<div class="ig-embed-wrap">
-               <iframe class="ig-embed-frame" data-src="${eu}"
-                 scrolling="no" frameborder="0" allowtransparency="true"
-                 sandbox="allow-scripts allow-same-origin allow-popups"
-                 onload="this.classList.add('ig-loaded')"></iframe>
-               <div class="ig-embed-loader"><div class="ig-spinner"></div></div>
-             </div>`
-          : `<div class="post-thumb-placeholder">
-               <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                 <rect x="3" y="3" width="30" height="30" rx="5" stroke="#666" stroke-width="1.4"/>
-                 <circle cx="13" cy="13" r="3" stroke="#666" stroke-width="1.4"/>
-                 <path d="M3 26 L11 18 L17 23 L23 17 L33 26" stroke="#666" stroke-width="1.4" stroke-linejoin="round"/>
-               </svg>
-             </div>`; })()}
+        <div class="post-thumb-placeholder">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(110,209,187,0.35)" stroke-width="1.2">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="rgba(110,209,187,0.35)" stroke="none"/>
+          </svg>
+        </div>
         <span class="post-type" style="color:${TYPE_COLOR[p.type]||'#6ED1BB'}">${p.type}</span>
         <div class="post-overlay">
           <p class="overlay-date">${p.date}</p>
@@ -720,7 +699,6 @@ function renderPosts(filter) {
   `).join('');
 
   observeFadeIns();
-  observeIframeLazy();
 }
 
 function openModal(id) {
