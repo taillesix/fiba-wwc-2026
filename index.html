@@ -769,7 +769,20 @@ function openModal(id) {
   const maxS = Math.max(...POSTS.map(x=>x.stats.saves));
   const maxSh= Math.max(...POSTS.map(x=>x.stats.shares));
 
-  document.getElementById('modal-embed').innerHTML = `
+  const modalEmbedUrl = IS_DESKTOP ? getEmbedUrl(p.url) : null;
+  document.getElementById('modal-embed').innerHTML = modalEmbedUrl ? `
+    <div style="width:100%;height:100%;position:relative;overflow:hidden;">
+      <iframe
+        src="${modalEmbedUrl}"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+        scrolling="no" allowtransparency="true" frameborder="0"
+        sandbox="allow-scripts allow-same-origin allow-popups"
+        onload="const l=document.getElementById('modal-ig-loader');if(l)l.style.opacity='0';"
+      ></iframe>
+      <div id="modal-ig-loader" style="position:absolute;inset:0;background:#1a1a1a;display:flex;align-items:center;justify-content:center;transition:opacity 0.7s ease 0.3s;pointer-events:none;">
+        <div class="ig-spinner"></div>
+      </div>
+    </div>` : `
     <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(110,209,187,0.4)" stroke-width="1">
         <rect x="2" y="2" width="20" height="20" rx="5"/>
