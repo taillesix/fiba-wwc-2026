@@ -539,6 +539,7 @@
     <p class="kpi-label">Total Reach</p>
     <p class="kpi-value">279<span class="unit">K</span></p>
     <p class="kpi-sub">unique accounts reached</p>
+    <p class="kpi-sub" style="margin-top:4px;font-size:12px;color:var(--teal);letter-spacing:0.06em;" id="kpi-reach-exact"></p>
   </div>
   <div class="kpi-card fade-in">
     <p class="kpi-label">Avg. Engagement Rate</p>
@@ -862,6 +863,13 @@ function observeFadeIns() {
 
 renderPosts('all');
 observeFadeIns();
+
+// Reach total exact
+(function() {
+  const totalReach = POSTS.reduce((s, p) => s + (p.stats.reach || 0), 0);
+  const el = document.getElementById('kpi-reach-exact');
+  if (el) el.textContent = totalReach.toLocaleString('fr-FR') + ' comptes';
+})();
 </script>
 </body>
 </html>
