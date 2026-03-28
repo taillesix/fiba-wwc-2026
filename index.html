@@ -536,10 +536,9 @@
 <!-- KPIs -->
 <section class="kpi-band">
   <div class="kpi-card fade-in">
-    <p class="kpi-label">Total Reach</p>
-    <p class="kpi-value">279<span class="unit">K</span></p>
-    <p class="kpi-sub">unique accounts reached</p>
-    <p class="kpi-sub" style="margin-top:4px;font-size:12px;color:var(--teal);letter-spacing:0.06em;" id="kpi-reach-exact"></p>
+    <p class="kpi-label">Total Views</p>
+    <p class="kpi-value" id="kpi-views-value">—</p>
+    <p class="kpi-sub" id="kpi-views-sub"></p>
   </div>
   <div class="kpi-card fade-in">
     <p class="kpi-label">Avg. Engagement Rate</p>
@@ -864,11 +863,19 @@ function observeFadeIns() {
 renderPosts('all');
 observeFadeIns();
 
-// Reach total exact
+// KPI Views + Reach
 (function() {
+  const totalViews = POSTS.reduce((s, p) => s + (p.stats.views || 0), 0);
   const totalReach = POSTS.reduce((s, p) => s + (p.stats.reach || 0), 0);
-  const el = document.getElementById('kpi-reach-exact');
-  if (el) el.textContent = totalReach.toLocaleString('fr-FR') + ' comptes';
+  const fmtNum = n => n >= 1000000
+    ? (n/1000000).toFixed(1).replace('.',',') + 'M'
+    : n >= 1000
+      ? (n/1000).toFixed(0) + 'K'
+      : n;
+  const vEl = document.getElementById('kpi-views-value');
+  const sEl = document.getElementById('kpi-views-sub');
+  if (vEl) vEl.innerHTML = fmtNum(totalViews).replace(/(\d+)(K|M)/, '$1<span class="unit">$2</span>');
+  if (sEl) sEl.textContent = totalReach.toLocaleString('fr-FR') + ' unique accounts reached';
 })();
 </script>
 </body>
